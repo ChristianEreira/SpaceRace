@@ -1,19 +1,40 @@
-let ctx, i;
-let size = 500;
-
-let changeFill = col => {
-    ctx.fillStyle = col;
-};
-
-let fillRect = (x, y, width, height, col) => {
-    if (col) { changeFill('#' + col); }
-    ctx.fillRect(x, y, width, height);
-};
-
-let rand = (min, max) => min + Math.random() * (max - min);
-
 window.onload = () => {
-    ctx = document.querySelector("#a").getContext('2d');
+    let size = 500;
+    let ctx = document.querySelector("#a").getContext('2d'), i;
+
+    let moveTo = ctx.moveTo.bind(ctx);
+    let lineTo = ctx.lineTo.bind(ctx);
+    let arcTo = ctx.arcTo.bind(ctx);
+
+    let changeFill = col => {
+        ctx.fillStyle = '#' + col;
+    };
+
+    let fillRect = (x, y, width, height, col) => {
+        changeFill(col);
+        ctx.fillRect(x, y, width, height);
+    };
+
+    let roundRect = (x, y, width, height, col, borderCol) => {
+        let radius = 8;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        moveTo(x + radius, y);
+        lineTo(x + width - radius, y);
+        arcTo(x + width, y, x + width, y + radius, radius);
+        lineTo(x + width, y + height - radius);
+        arcTo(x + width, y + height, x + width - radius, y + height, radius);
+        lineTo(x + radius, y + height);
+        arcTo(x, y + height, x, y + height - radius, radius);
+        lineTo(x, y + radius);
+        arcTo(x, y, x + width, y, radius);
+        changeFill(col);
+        ctx.strokeStyle = '#' + borderCol;
+        ctx.stroke();
+        ctx.fill();
+    };
+
+    let rand = (min, max) => min + Math.random() * (max - min);
 
     fillRect(0, 0, size, size, '38B7FF');
 
@@ -27,9 +48,11 @@ window.onload = () => {
 
     for (i = 0; i < 500; i += 10) {
         ctx.beginPath();
-        ctx.moveTo(i, size - 18 - 8 - 12);
-        ctx.lineTo(i + 10, size - 18 - 8 - 12);
-        ctx.lineTo(i + rand(0, 10), rand(size - 18 - 8 - 12 - 30, size - 18 - 8 - 12 - 8));
+        moveTo(i, size - 18 - 8 - 12);
+        lineTo(i + 10, size - 18 - 8 - 12);
+        lineTo(i + rand(0, 10), rand(size - 18 - 8 - 12 - 30, size - 18 - 8 - 12 - 8));
         ctx.fill();
     }
+
+    roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
 };
