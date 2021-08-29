@@ -66,6 +66,14 @@ window.onload = () => {
             ctx.fill();
         }
 
+        ctx.beginPath();
+        moveTo(0, 30);
+        ctx.quadraticCurveTo(size / 2, 200, size, 30);
+        lineTo(size, -500);
+        lineTo(0, -500);
+        changeFill('38ACFF');
+        ctx.fill();
+
         roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
         ctx.drawImage(rocket, 217.5, 410, 65, 105);
         requestAnimationFrame(draw);
