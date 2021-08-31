@@ -47,9 +47,12 @@ window.onload = () => {
 
     let showControlsUI = true;
     let launched = false;
+    let turnLeft = 0;
+    let turnRight = 0;
     let rockety = 460;
-    let speed = 5;
+    let speed = 10;
     let dist = 0;
+    let rot = 0;
 
     let draw = () => {
         // Set seed - 13k, obviously ;)
@@ -57,6 +60,8 @@ window.onload = () => {
 
         // Move rocket
         if (launched) {
+            rot += turnRight - turnLeft;
+
             if (rockety > 250) {
                 rockety -= Math.ceil(speed * ((500 - rockety) / 250));
             } else {
@@ -64,6 +69,8 @@ window.onload = () => {
                 rockety = 250 - dist;
                 ctx.setTransform(1, 0, 0, 1, 0, dist);
             }
+        } else {
+            // ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
 
         fillRect(0, 0, size, size, '38B7FF');
@@ -91,21 +98,28 @@ window.onload = () => {
         ctx.beginPath();
         moveTo(0, 30);
         ctx.quadraticCurveTo(size / 2, 200, size, 30);
-        lineTo(size, -500);
-        lineTo(0, -500);
+        lineTo(size, -50000);
+        lineTo(0, -50000);
         changeFill('38ACFF');
         ctx.fill();
 
-        // Draw rocket
         roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
+
+        // Draw rocket
+        ctx.save();
+        ctx.translate(250, rockety);
+        ctx.rotate(rot);
+        ctx.translate(-250, -rockety);
         ctx.drawImage(rocket, 217.5, rockety - (105 / 2), 65, 105);
-        requestAnimationFrame(draw);
+        ctx.restore();
 
         if (showControlsUI) {
             ctx.globalAlpha = 0.6;
             fillRect(0, 0, size, size, '000');
             ctx.globalAlpha = 1;
         }
+
+        requestAnimationFrame(draw);
     };
 
     draw();
@@ -116,7 +130,22 @@ window.onload = () => {
             if (e.code == "Space") {
                 launched = true;
             }
+            else if (e.code == "ArrowLeft") {
+                turnLeft = 0.1;
+            }
+            else if (e.code == "ArrowRight") {
+                turnRight = 0.1;
+            }
         }
         showControlsUI = false;
     };
+
+    window.onkeyup = (e) => {
+        if (e.code == "ArrowLeft") {
+            turnLeft = 0;
+        }
+        else if (e.code == "ArrowRight") {
+            turnRight = 0;
+        }
+    }
 };
