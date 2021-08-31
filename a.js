@@ -50,6 +50,7 @@ window.onload = () => {
     let turnLeft = 0;
     let turnRight = 0;
     let rockety = 460;
+    let rocketx = 250;
     let speed = 10;
     let dist = 0;
     let rot = 0;
@@ -60,12 +61,12 @@ window.onload = () => {
 
         // Move rocket
         if (launched) {
-            rot += turnRight - turnLeft;
-
             if (rockety > 250) {
                 rockety -= Math.ceil(speed * ((500 - rockety) / 250));
             } else {
-                dist += speed;
+                rot += turnRight - turnLeft;
+                rocketx += speed * Math.cos(rot - (Math.PI / 2));
+                dist -= speed * Math.sin(rot - (Math.PI / 2));
                 rockety = 250 - dist;
                 ctx.setTransform(1, 0, 0, 1, 0, dist);
             }
@@ -107,10 +108,10 @@ window.onload = () => {
 
         // Draw rocket
         ctx.save();
-        ctx.translate(250, rockety);
+        ctx.translate(rocketx, rockety);
         ctx.rotate(rot);
-        ctx.translate(-250, -rockety);
-        ctx.drawImage(rocket, 217.5, rockety - (105 / 2), 65, 105);
+        ctx.translate(-rocketx, -rockety);
+        ctx.drawImage(rocket, rocketx - (65 / 2), rockety - (105 / 2), 65, 105);
         ctx.restore();
 
         if (showControlsUI) {
