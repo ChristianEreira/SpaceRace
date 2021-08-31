@@ -43,21 +43,42 @@ window.onload = () => {
         let t = Math.imul(seed ^ seed >>> 15, 1 | a);
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
         return min + (((t ^ t >>> 14) >>> 0) / 4294967296) * (max - min);
-    }
+    };
+
+    let showControlsUI = true;
+    let launched = false;
+    let rockety = 460;
+    let speed = 5;
+    let dist = 0;
 
     let draw = () => {
         // Set seed - 13k, obviously ;)
         seed = 13312;
+
+        // Move rocket
+        if (launched) {
+            if (rockety > 250) {
+                rockety -= Math.ceil(speed * ((500 - rockety) / 250));
+            } else {
+                dist += speed;
+                rockety = 250 - dist;
+                ctx.setTransform(1, 0, 0, 1, 0, dist);
+            }
+        }
+
         fillRect(0, 0, size, size, '38B7FF');
 
+        // Draw buildings
         for (i = 0; i < 500; i += 30) {
             fillRect(i, size - 30 - rand(30, 99), rand(30, 99), 99 + 30, '33A6FF');
         }
 
+        // Draw grass layers
         fillRect(0, size - 18, size, 18, '007C1B');
         fillRect(0, size - 18 - 8, size, 8, '008A1E');
         fillRect(0, size - 18 - 8 - 12, size, 12, '00AC2E');
 
+        // Draw grass strands
         for (i = 0; i < 500; i += 10) {
             ctx.beginPath();
             moveTo(i, size - 18 - 8 - 12);
@@ -66,6 +87,7 @@ window.onload = () => {
             ctx.fill();
         }
 
+        // Draw next sky layer
         ctx.beginPath();
         moveTo(0, 30);
         ctx.quadraticCurveTo(size / 2, 200, size, 30);
@@ -74,10 +96,27 @@ window.onload = () => {
         changeFill('38ACFF');
         ctx.fill();
 
+        // Draw rocket
         roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
-        ctx.drawImage(rocket, 217.5, 410, 65, 105);
+        ctx.drawImage(rocket, 217.5, rockety - (105 / 2), 65, 105);
         requestAnimationFrame(draw);
-    }
+
+        if (showControlsUI) {
+            ctx.globalAlpha = 0.6;
+            fillRect(0, 0, size, size, '000');
+            ctx.globalAlpha = 1;
+        }
+    };
 
     draw();
+
+    window.onkeydown = (e) => {
+        console.log(e);
+        if (!showControlsUI) {
+            if (e.code == "Space") {
+                launched = true;
+            }
+        }
+        showControlsUI = false;
+    };
 };
