@@ -1,6 +1,14 @@
-let i, seed;
-let rocket = new Image();
-rocket.src = "rocket.svg";
+let i, seed = 13312;
+let assetsList = ["rocket.svg", "rocket.svg", "rocket.svg"];
+let assets = [];
+assetsList.forEach(assetName => {
+    let asset = new Image();
+    asset.src = assetName;
+    assets.push(asset);
+});
+let objects = [{ speed: 3, num: 40, minSize: 20, maxSize: 50, color: "38ACFF", spacing: 80 },
+{ speed: 1, num: 5, minSize: 100, maxSize: 300, color: "000", spacing: 150 }];
+
 window.onload = () => {
     let size = 500;
     let ctx = document.querySelector("#a").getContext('2d');
@@ -45,13 +53,26 @@ window.onload = () => {
         return min + (((t ^ t >>> 14) >>> 0) / 4294967296) * (max - min);
     };
 
+    // Generate entities
+    let entities = [];
+    let cy = 180;
+    for (let i = 0; i < objects.length; i++) {
+        for (let j = 0; j < objects[i].num; j++) {
+            let size = rand(objects[i].minSize, objects[i].maxSize);
+            cy -= (objects[i].spacing + size);
+            entities.push({ object: i, x: rand(0, 500), y: cy, direction: Math.round(rand(1, 10)) > 5 ? 1 : -1, size: size });
+        }
+    }
+
+    console.table(entities);
+
     let showControlsUI = true;
     let launched = false;
     let turnLeft = 0;
     let turnRight = 0;
     let rockety = 460;
     let rocketx = 250;
-    let speed = 10;
+    let speed = 5;
     let dist = 0;
     let rot = 0;
 
@@ -106,12 +127,21 @@ window.onload = () => {
 
         roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
 
+        // Draw & move entities
+        entities.forEach(entity => {
+            if (entity.x > 500 || entity.x < 0) {
+                entity.direction *= -1;
+            }
+            entity.x += entity.direction * objects[entity.object].speed;
+            fillRect(entity.x - entity.size / 2, entity.y - entity.size / 2, entity.size, entity.size, "FFF");
+        });
+
         // Draw rocket
         ctx.save();
         ctx.translate(rocketx, rockety);
         ctx.rotate(rot);
         ctx.translate(-rocketx, -rockety);
-        ctx.drawImage(rocket, rocketx - (65 / 2), rockety - (105 / 2), 65, 105);
+        ctx.drawImage(assets[0], rocketx - (65 / 2), rockety - (105 / 2), 65, 105);
         ctx.restore();
 
         if (showControlsUI) {
