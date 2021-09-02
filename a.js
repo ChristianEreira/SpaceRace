@@ -1,12 +1,12 @@
 let i, seed = 13312;
-let assetsList = ["rocket.svg", "rocket.svg", "rocket.svg"];
+let assetsList = ["rocket.svg", "seagull.svg", "rocket.svg"];
 let assets = [];
 assetsList.forEach(assetName => {
     let asset = new Image();
     asset.src = assetName;
     assets.push(asset);
 });
-let objects = [{ speed: 3, num: 40, minSize: 20, maxSize: 50, color: "38ACFF", spacing: 80 },
+let objects = [{ speed: 3, num: 40, minSize: 35, maxSize: 50, color: "38ACFF", spacing: 80 },
 { speed: 1, num: 5, minSize: 100, maxSize: 300, color: "000", spacing: 150 }];
 
 window.onload = () => {
@@ -129,11 +129,18 @@ window.onload = () => {
 
         // Draw & move entities
         entities.forEach(entity => {
-            if (entity.x > 500 || entity.x < 0) {
+            if (entity.x > 500 + entity.size / 2 || entity.x < 0 - entity.size / 2) {
                 entity.direction *= -1;
             }
             entity.x += entity.direction * objects[entity.object].speed;
-            fillRect(entity.x - entity.size / 2, entity.y - entity.size / 2, entity.size, entity.size, "FFF");
+            ctx.save();
+            if (entity.direction > 0) {
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(assets[entity.object + 1], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
+
+            ctx.restore();
+            ctx.stroke();
         });
 
         // Draw rocket
