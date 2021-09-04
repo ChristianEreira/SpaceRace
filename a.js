@@ -116,19 +116,22 @@ window.onload = () => {
             ctx.fill();
         }
 
-        // Draw next sky layer
-        ctx.beginPath();
-        moveTo(0, 30);
-        ctx.quadraticCurveTo(size / 2, 200, size, 30);
-        lineTo(size, -50000);
-        lineTo(0, -50000);
-        changeFill('38ACFF');
-        ctx.fill();
-
         roundRect(196, size - 15, 108, 100, '737373', 'B5B5B5');
 
+        let currColor = "";
         // Draw & move entities
         entities.forEach(entity => {
+            if (objects[entity.object].color != currColor) {
+                currColor = objects[entity.object].color;
+                // Draw next sky layer
+                ctx.beginPath();
+                moveTo(0, entity.y);
+                ctx.quadraticCurveTo(size / 2, entity.y + 170, size, entity.y);
+                lineTo(size, -50000);
+                lineTo(0, -50000);
+                changeFill(currColor);
+                ctx.fill();
+            }
             if (entity.x > 500 + entity.size / 2 || entity.x < 0 - entity.size / 2) {
                 entity.direction *= -1;
             }
@@ -138,9 +141,7 @@ window.onload = () => {
                 ctx.scale(-1, 1);
             }
             ctx.drawImage(assets[entity.object + 1], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
-
             ctx.restore();
-            ctx.stroke();
         });
 
         // Draw rocket
@@ -161,6 +162,10 @@ window.onload = () => {
     };
 
     draw();
+
+    document.querySelector("#a").onmousemove = e => {
+        console.log(ctx.isPointInPath('m345.24-64.475-58.999 35c-0.11009 0.18135-0.22711 0.35364-0.33746 0.53464l-117.66 70.465c-8 4-13.999 9.9987-18.999 16.999l-58.214 79.444-61.788-84.444c-4-7-9.9987-12-16.999-16l-164-97c3.375 7.125 6.9972 14.11 10.858 20.94 4e-3 0.0064 8e-3 0.01253 0.0114 0.01896l3.132 6.0403 0.58015 0.34506c16.117 27.053 36.063 51.559 59.42 72.655l24.999 22c21 19 37 44.001 44 72.001l10.206 35.721c-4.4074 0.19961-8.2396 0.59545-11.205 1.2797-25 4-45.001 21.999-47.001 46.999-0.0653 1.0129-0.0274 1.9999-0.0379 2.9993h-28.962c-15 0-27 12-27 27h62.929c9.0099 15.628 25.776 26 45.071 26h66.999v18c0 14 11.001 25.001 25.001 25.001h22.999v8.9998c0 4 3.0007 7.9988 8.0007 7.9988 4 0 6.9997-3.9988 6.9997-7.9988v-8.9998h13.999v8.9998c1e-5 4 4.0007 7.9988 8.0007 7.9988 4 0 6.9997-3.9988 6.9997-7.9988v-16.001c0-4-2.9997-7.9988-6.9997-7.9988h-31c-5 0-10.001-4.0009-10.001-10.001v-18h90c14 0 28-6.0006 38-17.001l6.9997-7.9988c8-8 19.001-13 30.001-13h44.999c0-13-8.999-23-20.999-26l-117-20 20-73.999c3-11 8.9997-21.001 18-28.001l49-44c34-31 61-66.999 80-109zm-268 339h13.999v18c0 3.574 0.72038 6.951 2.021 10.001h-6.0195c-6 0-10.001-4.0009-10.001-10.001z', e.offsetX, e.offsetY));
+    };
 
     window.onkeydown = (e) => {
         console.log(e);
