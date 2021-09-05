@@ -6,7 +6,7 @@ assetsList.forEach(assetName => {
     asset.src = assetName;
     assets.push(asset);
 });
-let objects = [{ speed: 3, num: 40, minSize: 35, maxSize: 50, color: "38ACFF", spacing: 80 },
+let objects = [{ speed: 3, num: 40, minSize: 35, maxSize: 50, color: "38acff", spacing: 80 },
 { speed: 1, num: 5, minSize: 100, maxSize: 300, color: "000", spacing: 150 }];
 
 window.onload = () => {
@@ -64,6 +64,10 @@ window.onload = () => {
         }
     }
 
+    let rgbToHex = (r, g, b) => {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    };
+
     console.table(entities);
 
     let showControlsUI = true;
@@ -72,6 +76,7 @@ window.onload = () => {
     let turnRight = 0;
     let rockety = 460;
     let rocketx = 250;
+    let rocketWidth = 65;
     let speed = 5;
     let dist = 0;
     let rot = 0;
@@ -92,7 +97,7 @@ window.onload = () => {
                 ctx.setTransform(1, 0, 0, 1, 0, dist);
             }
         } else {
-            // ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
 
         fillRect(0, 0, size, size, '38B7FF');
@@ -149,8 +154,30 @@ window.onload = () => {
         ctx.translate(rocketx, rockety);
         ctx.rotate(rot);
         ctx.translate(-rocketx, -rockety);
-        ctx.drawImage(assets[0], rocketx - (65 / 2), rockety - (105 / 2), 65, 105);
+        ctx.drawImage(assets[0], rocketx - (rocketWidth / 2), rockety - (105 / 2), rocketWidth, 105);
         ctx.restore();
+
+        let colors = ["000000", "f5dc1d", "ffe940", "7191f0", "6084f0", "ebf9ff", "d7effa"];
+        let checkPixel = (x, y) => {
+            let pixel = ctx.getImageData(x, y, 1, 1).data;
+            // fillRect(x - 5, rockety + y - 5 - 250, 10, 10, "0f0");
+            if (colors.includes(rgbToHex(pixel[0], pixel[1], pixel[2]))) {
+                console.log('crashed!', rgbToHex(pixel[0], pixel[1], pixel[2]));
+                launched = false;
+                turnLeft = 0;
+                turnRight = 0;
+                rockety = 460;
+                rocketx = 250;
+                speed = 5;
+                dist = 0;
+                rot = 0;
+            } else {
+                console.log('safe', rgbToHex(pixel[0], pixel[1], pixel[2]));
+            }
+        };
+        checkPixel(rocketx + ((115 / 2) * Math.cos(rot - (Math.PI / 2))), 250 + ((115 / 2) * Math.sin(rot - (Math.PI / 2))));
+        checkPixel(rocketx - ((rocketWidth / 2.5) * Math.sin(rot - (Math.PI / 2))), 250 + ((rocketWidth / 2.5) * Math.cos(rot - (Math.PI / 2))));
+        checkPixel(rocketx + ((rocketWidth / 2.5) * Math.sin(rot - (Math.PI / 2))), 250 - ((rocketWidth / 2.5) * Math.cos(rot - (Math.PI / 2))));
 
         if (showControlsUI) {
             ctx.globalAlpha = 0.6;
@@ -162,10 +189,6 @@ window.onload = () => {
     };
 
     draw();
-
-    document.querySelector("#a").onmousemove = e => {
-        console.log(ctx.isPointInPath('m345.24-64.475-58.999 35c-0.11009 0.18135-0.22711 0.35364-0.33746 0.53464l-117.66 70.465c-8 4-13.999 9.9987-18.999 16.999l-58.214 79.444-61.788-84.444c-4-7-9.9987-12-16.999-16l-164-97c3.375 7.125 6.9972 14.11 10.858 20.94 4e-3 0.0064 8e-3 0.01253 0.0114 0.01896l3.132 6.0403 0.58015 0.34506c16.117 27.053 36.063 51.559 59.42 72.655l24.999 22c21 19 37 44.001 44 72.001l10.206 35.721c-4.4074 0.19961-8.2396 0.59545-11.205 1.2797-25 4-45.001 21.999-47.001 46.999-0.0653 1.0129-0.0274 1.9999-0.0379 2.9993h-28.962c-15 0-27 12-27 27h62.929c9.0099 15.628 25.776 26 45.071 26h66.999v18c0 14 11.001 25.001 25.001 25.001h22.999v8.9998c0 4 3.0007 7.9988 8.0007 7.9988 4 0 6.9997-3.9988 6.9997-7.9988v-8.9998h13.999v8.9998c1e-5 4 4.0007 7.9988 8.0007 7.9988 4 0 6.9997-3.9988 6.9997-7.9988v-16.001c0-4-2.9997-7.9988-6.9997-7.9988h-31c-5 0-10.001-4.0009-10.001-10.001v-18h90c14 0 28-6.0006 38-17.001l6.9997-7.9988c8-8 19.001-13 30.001-13h44.999c0-13-8.999-23-20.999-26l-117-20 20-73.999c3-11 8.9997-21.001 18-28.001l49-44c34-31 61-66.999 80-109zm-268 339h13.999v18c0 3.574 0.72038 6.951 2.021 10.001h-6.0195c-6 0-10.001-4.0009-10.001-10.001z', e.offsetX, e.offsetY));
-    };
 
     window.onkeydown = (e) => {
         console.log(e);
