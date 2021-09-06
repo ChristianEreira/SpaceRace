@@ -1,16 +1,23 @@
 let i, seed = 13312;
-let assetsList = ["rocket.svg", "seagull.svg", "rocket.svg"];
+let assetsList = ["rocket.svg", "seagull.svg", "plane.svg", "cloud.svg"];
 let assets = [];
 assetsList.forEach(assetName => {
     let asset = new Image();
     asset.src = assetName;
     assets.push(asset);
 });
-let objects = [{ speed: 3, num: 40, minSize: 35, maxSize: 50, color: "38acff", spacing: 80 },
-{ speed: 1, num: 5, minSize: 100, maxSize: 300, color: "000", spacing: 150 }];
+
+let size = 500;
+
+let objects = [
+    { speed: 2, num: 20, minSize: 35, maxSize: 50, color: "38acff", spacing: 80 },
+    { speed: 3, num: 15, minSize: 70, maxSize: 100, color: "389bf8", spacing: 150 },
+    { speed: 2, num: 8, minSize: 120, maxSize: 180, color: "3877F1", spacing: 60 }
+];
 
 window.onload = () => {
-    let size = 500;
+    let quartPi = Math.PI / 2;
+
     let ctx = document.querySelector("#a").getContext('2d');
 
     let moveTo = ctx.moveTo.bind(ctx);
@@ -91,8 +98,8 @@ window.onload = () => {
                 rockety -= Math.ceil(speed * ((500 - rockety) / 250));
             } else {
                 rot += turnRight - turnLeft;
-                rocketx += speed * Math.cos(rot - (Math.PI / 2));
-                dist -= speed * Math.sin(rot - (Math.PI / 2));
+                rocketx += speed * Math.cos(rot - (quartPi));
+                dist -= speed * Math.sin(rot - (quartPi));
                 rockety = 250 - dist;
                 ctx.setTransform(1, 0, 0, 1, 0, dist);
             }
@@ -157,7 +164,7 @@ window.onload = () => {
         ctx.drawImage(assets[0], rocketx - (rocketWidth / 2), rockety - (105 / 2), rocketWidth, 105);
         ctx.restore();
 
-        let colors = ["000000", "f5dc1d", "ffe940", "7191f0", "6084f0", "ebf9ff", "d7effa"];
+        let colors = ["000000", "f5dc1d", "ffe940", "7191f0", "6084f0", "ebf9ff", "d7effa", "607d8b", "eceff1", "cdd0d2", "546d79", "bbdefb"];
         let checkPixel = (x, y) => {
             let pixel = ctx.getImageData(x, y, 1, 1).data;
             // fillRect(x - 5, rockety + y - 5 - 250, 10, 10, "0f0");
@@ -175,9 +182,9 @@ window.onload = () => {
                 console.log('safe', rgbToHex(pixel[0], pixel[1], pixel[2]));
             }
         };
-        checkPixel(rocketx + ((115 / 2) * Math.cos(rot - (Math.PI / 2))), 250 + ((115 / 2) * Math.sin(rot - (Math.PI / 2))));
-        checkPixel(rocketx - ((rocketWidth / 2.5) * Math.sin(rot - (Math.PI / 2))), 250 + ((rocketWidth / 2.5) * Math.cos(rot - (Math.PI / 2))));
-        checkPixel(rocketx + ((rocketWidth / 2.5) * Math.sin(rot - (Math.PI / 2))), 250 - ((rocketWidth / 2.5) * Math.cos(rot - (Math.PI / 2))));
+        checkPixel(rocketx + ((115 / 2) * Math.cos(rot - (quartPi))), 250 + ((115 / 2) * Math.sin(rot - (quartPi))));
+        checkPixel(rocketx - ((rocketWidth / 2.5) * Math.sin(rot - (quartPi))), 250 + ((rocketWidth / 2.5) * Math.cos(rot - (quartPi))));
+        checkPixel(rocketx + ((rocketWidth / 2.5) * Math.sin(rot - (quartPi))), 250 - ((rocketWidth / 2.5) * Math.cos(rot - (quartPi))));
 
         if (showControlsUI) {
             ctx.globalAlpha = 0.6;
