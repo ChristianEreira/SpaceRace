@@ -1,5 +1,5 @@
 let i, seed = 13312;
-let assetsList = ["rocket.svg", "seagull.svg", "plane.svg", "cloud.svg"];
+let assetsList = ["logo.svg", "rocket.svg", "seagull.svg", "plane.svg", "cloud.svg"];
 let assets = [];
 assetsList.forEach(assetName => {
     let asset = new Image();
@@ -8,17 +8,28 @@ assetsList.forEach(assetName => {
 });
 
 let size = 500;
+let showControlsUI = true;
+
+let buttons = {
+    play: {
+        x: 192, y: 406, width: 117, height: 47, click: () => {
+            showControlsUI = false;
+            delete buttons.play;
+        }
+    }
+};
 
 let objects = [
     { speed: 2, num: 20, minSize: 35, maxSize: 50, color: "38acff", spacing: 80 },
     { speed: 3, num: 15, minSize: 70, maxSize: 100, color: "389bf8", spacing: 150 },
-    { speed: 2, num: 8, minSize: 120, maxSize: 180, color: "3877F1", spacing: 60 }
+    { speed: 2, num: 8, minSize: 135, maxSize: 200, color: "3877F1", spacing: 60 }
 ];
 
 window.onload = () => {
     let quartPi = Math.PI / 2;
 
-    let ctx = document.querySelector("#a").getContext('2d');
+    let c = document.querySelector("#a");
+    let ctx = c.getContext('2d');
 
     let moveTo = ctx.moveTo.bind(ctx);
     let lineTo = ctx.lineTo.bind(ctx);
@@ -77,7 +88,6 @@ window.onload = () => {
 
     console.table(entities);
 
-    let showControlsUI = true;
     let launched = false;
     let turnLeft = 0;
     let turnRight = 0;
@@ -152,7 +162,7 @@ window.onload = () => {
             if (entity.direction > 0) {
                 ctx.scale(-1, 1);
             }
-            ctx.drawImage(assets[entity.object + 1], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
+            ctx.drawImage(assets[entity.object + 2], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
             ctx.restore();
         });
 
@@ -161,7 +171,7 @@ window.onload = () => {
         ctx.translate(rocketx, rockety);
         ctx.rotate(rot);
         ctx.translate(-rocketx, -rockety);
-        ctx.drawImage(assets[0], rocketx - (rocketWidth / 2), rockety - (105 / 2), rocketWidth, 105);
+        ctx.drawImage(assets[1], rocketx - (rocketWidth / 2), rockety - (105 / 2), rocketWidth, 105);
         ctx.restore();
 
         let colors = ["000000", "f5dc1d", "ffe940", "7191f0", "6084f0", "ebf9ff", "d7effa", "607d8b", "eceff1", "cdd0d2", "546d79", "bbdefb"];
@@ -169,7 +179,6 @@ window.onload = () => {
             let pixel = ctx.getImageData(x, y, 1, 1).data;
             // fillRect(x - 5, rockety + y - 5 - 250, 10, 10, "0f0");
             if (colors.includes(rgbToHex(pixel[0], pixel[1], pixel[2]))) {
-                console.log('crashed!', rgbToHex(pixel[0], pixel[1], pixel[2]));
                 launched = false;
                 turnLeft = 0;
                 turnRight = 0;
@@ -178,8 +187,6 @@ window.onload = () => {
                 speed = 5;
                 dist = 0;
                 rot = 0;
-            } else {
-                console.log('safe', rgbToHex(pixel[0], pixel[1], pixel[2]));
             }
         };
         checkPixel(rocketx + ((115 / 2) * Math.cos(rot - (quartPi))), 250 + ((115 / 2) * Math.sin(rot - (quartPi))));
@@ -190,6 +197,33 @@ window.onload = () => {
             ctx.globalAlpha = 0.6;
             fillRect(0, 0, size, size, '000');
             ctx.globalAlpha = 1;
+            ctx.drawImage(assets[0], 139, 32, 222, 95);
+            roundRect(86, 191, 109, 39, "dfdfdf", "b5b5b5");
+            ctx.font = "18px Arial";
+            ctx.textBaseline = "middle";
+            ctx.fillText("Launch / Activate boost", 227, 211);
+            ctx.fillText("Steer rocket", 227, 266);
+            ctx.fillText("Avoid obstacles, collect      , upgrade the rocket, and", 41, 328);
+            ctx.font = "bold 18px Arial";
+            ctx.fillText("make it to space.", 177, 349);
+            roundRect(86, 246, 45, 39, "dfdfdf", "b5b5b5");
+            roundRect(149, 246, 45, 39, "dfdfdf", "b5b5b5");
+            ctx.shadowColor = 'rgba(0, 0, 0, .25)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetY = 4;
+            roundRect(196, 410, 109, 39, "FFB800", "FFB800");
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+            changeFill("000");
+            ctx.fillText("SPACE", 110, 211);
+            ctx.fillText("Play", 231, 430);
+            ctx.fillText("\u25C4", 99, 266);
+            ctx.fillText("\u25BA", 161, 266);
+        } else if (!launched) {
+            ctx.font = "bold 48px Arial";
+            changeFill("fff");
+            ctx.fillText("PRESS SPACE", 81, 222);
+            ctx.fillText("TO LAUNCH", 109, 277);
         }
 
         requestAnimationFrame(draw);
@@ -197,7 +231,7 @@ window.onload = () => {
 
     draw();
 
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
         console.log(e);
         if (!showControlsUI) {
             if (e.code == "Space") {
@@ -210,10 +244,9 @@ window.onload = () => {
                 turnRight = 0.1;
             }
         }
-        showControlsUI = false;
     };
 
-    window.onkeyup = (e) => {
+    window.onkeyup = e => {
         if (e.code == "ArrowLeft") {
             turnLeft = 0;
         }
@@ -221,4 +254,21 @@ window.onload = () => {
             turnRight = 0;
         }
     }
+
+    c.onmousemove = e => {
+        let cursor = "default";
+        let clickEvent = () => {};
+        Object.values(buttons).forEach(button => {
+            if (e.clientX - c.offsetLeft >= button.x && e.clientX - c.offsetLeft <= button.x + button.width && e.clientY - c.offsetTop >= button.y && e.clientY - c.offsetTop <= button.y + button.height) {
+                cursor = "pointer";
+                clickEvent = button.click;
+            }
+        });
+        c.style.cursor = cursor;
+        c.onclick = clickEvent;
+    };
+
+    c.addEventListener("click", () => {
+        c.style.cursor = "default";
+    });
 };
