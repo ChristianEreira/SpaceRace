@@ -1,5 +1,5 @@
 let i, seed = 13312;
-let assetsList = ["logo.svg", "rocket.svg", "seagull.svg", "plane.svg", "cloud.svg"];
+let assetsList = ["logo.svg", "rocket.svg", "tree.svg", "seagull.svg", "plane.svg", "cloud.svg"];
 let assets = [];
 assetsList.forEach(assetName => {
     let asset = new Image();
@@ -124,6 +124,11 @@ window.onload = () => {
             fillRect(i, size - 30 - rand(30, 99), rand(30, 99), 99 + 30, '33A6FF');
         }
 
+        ctx.drawImage(assets[2], 437, 322, 147, 147);
+        ctx.drawImage(assets[2], 408, 346, 116, 116);
+        ctx.drawImage(assets[2], 316, 374, 88, 88);
+        ctx.drawImage(assets[2], 351, 322, 147, 147);
+
         // Draw grass layers
         fillRect(0, size - 18, size, 18, '007C1B');
         fillRect(0, size - 18 - 8, size, 8, '008A1E');
@@ -162,7 +167,7 @@ window.onload = () => {
             if (entity.direction > 0) {
                 ctx.scale(-1, 1);
             }
-            ctx.drawImage(assets[entity.object + 2], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
+            ctx.drawImage(assets[entity.object + 3], (entity.direction > 0 ? -1 : 1) * (entity.x), entity.y - entity.size / 2, entity.size, entity.size);
             ctx.restore();
         });
 
